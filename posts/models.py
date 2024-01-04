@@ -1,6 +1,13 @@
 import time
 from django.db import models
 from accounts.models import User
+from django.utils.crypto import get_random_string
+
+def generate_unique_token():
+    while True:
+        token = get_random_string(length=7)
+        if not info.objects.filter(token=token).exists():
+            return id
 
 
 def upload_to(instance, filename):
@@ -41,13 +48,19 @@ class info(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     timestamp = models.CharField(max_length=30, blank=True)
     visible = models.BooleanField(default=True)
+    token = models.CharField(
+        max_length=8,
+        unique=True,
+        null=True,
+        editable=False
+    )
 
 
     class Meta:
         abstract = True
 
     def __str__(self):
-        return str(self.timestamp) + ' - ' + self.title
+        return self.title + ' : ' + str(self.token)
 
 
 class ApartmentSell(info):
@@ -59,6 +72,13 @@ class ApartmentSell(info):
 
     def save(self, *args, **kwargs):
         if not self.pk:
+
+            while True:
+                self.token = 'S' + get_random_string(length=8)
+                if not ApartmentSell.objects.filter(token=self.token).exists():
+                    self.token = 'S' + get_random_string(length=8)
+                    break
+
             self.timestamp = '1' + str(time.time()).split('.')[0]
         return super().save(*args, **kwargs)
 
@@ -74,6 +94,13 @@ class ApartmentRent(info):
     
     def save(self, *args, **kwargs):
         if not self.pk:
+
+            while True:
+                self.token = 'R' + get_random_string(length=8)
+                if not ApartmentRent.objects.filter(token=self.token).exists():
+                    self.token = 'R' + get_random_string(length=8)
+                    break
+
             self.timestamp = '2' + str(time.time()).split('.')[0]
         return super().save(*args, **kwargs)
 

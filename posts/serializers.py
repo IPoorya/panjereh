@@ -5,6 +5,7 @@ from .models import ApartmentSell, ApartmentRent
 class ApartmentSellSerializer(serializers.ModelSerializer):
     timestamp = serializers.ReadOnlyField()
     created_at = serializers.ReadOnlyField()
+    token = serializers.ReadOnlyField()
 
     class Meta:
         model = ApartmentSell
@@ -14,6 +15,7 @@ class ApartmentSellSerializer(serializers.ModelSerializer):
 class ApartmentRentSerializer(serializers.ModelSerializer):
     timestamp = serializers.ReadOnlyField()
     created_at = serializers.ReadOnlyField()
+    token = serializers.ReadOnlyField()
 
     class Meta:
         model = ApartmentRent

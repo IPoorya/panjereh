@@ -14,7 +14,7 @@ class CreatePostApiView(APIView):
 
     type parametre values: sell, rent
 
-    example: /post/2/create/
+    example: /post/sell/create/
 
     **note**
 
@@ -23,11 +23,11 @@ class CreatePostApiView(APIView):
     differneces:
     in sell there is "total_price" field, but in rent there are "high_deposite", "low_rent", "low_deposite" and "high_rent" fields
 
-    so don't worry about response schema, we just put sell schema as default response schema for swagger
+    so don't worry about response schema, we just put rent schema as default response schema in swagger
     """
 
     permission_classes = [IsAuthenticated]
-    serializer_class = ApartmentSellSerializer
+    serializer_class = ApartmentRentSerializer
 
     def post(self, request, type):
         if type == 'rent':
@@ -44,7 +44,7 @@ class CreatePostApiView(APIView):
 
 class GetPostApiView(APIView):
     """
-    get posts using timestamp(temp)
+    get post using token
 
     **note**
 
@@ -53,24 +53,23 @@ class GetPostApiView(APIView):
     differneces:
     in sell there is "total_price" field, but in rent there are "high_deposite", "low_rent", "low_deposite" and "high_rent" fields
 
-    so don't worry about response schema, we just put sell schema as default response schema for swagger
+    so don't worry about response schema, we just put sell schema as default response schema in swagger
     """
 
 
     permission_classes = [AllowAny]
     serializer_class = ApartmentSellSerializer
 
-    def get(self, request, timestamp):
-        timestamp = str(timestamp)
-        if timestamp[0] == '1':
-            post = ApartmentSell.objects.filter(timestamp=timestamp).first()
+    def get(self, request, token):
+        if token[0] == 'S':
+            post = ApartmentSell.objects.filter(token=token).first()
             if post:
                 post = ApartmentSellSerializer(instance=post)
                 return Response(post.data, status=status.HTTP_200_OK)
             return Response({"Error": "not found!"}, status=status.HTTP_404_NOT_FOUND)
         
-        elif timestamp[0] == '2':
-            post = ApartmentRent.objects.filter(timestamp=timestamp).first()
+        elif token[0] == 'R':
+            post = ApartmentRent.objects.filter(token=token).first()
             if post:
                 post = ApartmentRentSerializer(instance=post)
                 return Response(post.data, status=status.HTTP_200_OK)
@@ -82,7 +81,7 @@ class GetPostApiView(APIView):
 
 class EditPostApiView(APIView):
     """
-    edit post using timestamp(temp)
+    edit post using token
 
     **note**
 
@@ -91,24 +90,22 @@ class EditPostApiView(APIView):
     differneces:
     in sell there is "total_price" field, but in rent there are "high_deposite", "low_rent", "low_deposite" and "high_rent" fields
 
-    so don't worry about response schema, we just put sell schema as default response schema for swagger
+    so don't worry about response schema, we just put sell schema as default response schema in swagger
     """
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
     serializer_class = ApartmentSellSerializer
 
-    def put(self, request, timestamp):
-        timestamp = str(timestamp)
-        if timestamp[0] == '1':
-            post = ApartmentSell.objects.filter(timestamp=timestamp)
-        elif timestamp[0] == '2':
-            post = ApartmentRent.objects.filter(timestamp=timestamp)
+    def put(self, request, token):
+        if token[0] == 'S':
+            post = ApartmentSell.objects.filter(token=token).first()
+        elif token[0] == 'R':
+            post = ApartmentRent.objects.filter(token=token).first()
 
         if post:
-            post = post[0]
             self.check_object_permissions(request, post)
-            if timestamp[0] == '1':
+            if token[0] == 'S':
                 srz_data = ApartmentSellSerializer(data=request.data, instance=post, partial=True)
-            elif timestamp[0] == '2':
+            elif token[0] == 'R':
                 srz_data = ApartmentRentSerializer(data=request.data, instance=post, partial=True)
             
             if srz_data.is_valid():
@@ -120,19 +117,17 @@ class EditPostApiView(APIView):
 
 class DeletePostApiView(APIView):
     """
-    delete post using timestamp(temp)
+    delete post using token
     """
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
 
-    def delete(self, request, timestamp):
-        timestamp = str(timestamp)
-        if timestamp[0] == '1':
-            post = ApartmentSell.objects.filter(timestamp=timestamp)
-        elif timestamp[0] == '2':
-            post = ApartmentRent.objects.filter(timestamp=timestamp)
+    def delete(self, request, token):
+        if token[0] == 'S':
+            post = ApartmentSell.objects.filter(token=token).first()
+        elif token[0] == 'R':
+            post = ApartmentRent.objects.filter(token=token).first()
 
         if post:
-            post = post[0]
             self.check_object_permissions(request, post)
             post.delete()
             return Response({"message": "post deleted"}, status=status.HTTP_200_OK)

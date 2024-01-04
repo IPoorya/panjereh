@@ -4,13 +4,13 @@ from .models import ApartmentRent, ApartmentSell
 
 @admin.register(ApartmentSell)
 class ApartmentSellAdmin(admin.ModelAdmin):
-    list_display = ['timestamp', 'title', 'meterage', 'province', 'city',  "created_at"]
-    readonly_fields = ["timestamp", "created_at"]
+    list_display = ['token', 'title', 'meterage', 'province', 'city',  "created_at"]
+    readonly_fields = ["timestamp", "created_at", "token"]
 
     fieldsets = [
         ('post info',
          {
-             "fields": ["owner", "title", "description",
+             "fields": ["owner", "token", "title", "description",
                         "created_at", "timestamp", "visible"]}),
         ('price',
          {
@@ -56,13 +56,13 @@ class ApartmentSellAdmin(admin.ModelAdmin):
 
 @admin.register(ApartmentRent)
 class ApartmentRentAdmin(admin.ModelAdmin):
-    list_display = ['timestamp', 'title', 'meterage', 'province', 'city',  "created_at"]
-    readonly_fields = ["timestamp", "created_at"]
+    list_display = ['token', 'title', 'meterage', 'province', 'city',  "created_at"]
+    readonly_fields = ["timestamp", "created_at", "token"]
 
     fieldsets = [
         ('post info',
          {
-             "fields": ["owner", "title", "description",
+             "fields": ["owner", "token", "title", "description",
                         "created_at", "timestamp", "visible"]}),
 
         ('low-deposite',

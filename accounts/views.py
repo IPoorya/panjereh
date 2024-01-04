@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import UserSerializer, OtpPhoneSerializer, OtpPhoneCodeSerializer
+from .serializers import UserSerializer, OtpSerializer
 from .models import User, otp as otpModel, ValidPhone
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from rest_framework import status
@@ -35,13 +35,13 @@ class SignUpApiView(APIView):
             
     
 
-class OtpPhoneApiView(APIView):
+class OtpApiView(APIView):
     """
     phone_number -- The phone number of the user
     """
 
     permission_classes = [AllowAny]
-    serializer_class = OtpPhoneSerializer
+    serializer_class = OtpSerializer
 
 
     @extend_schema(
@@ -56,20 +56,21 @@ class OtpPhoneApiView(APIView):
         ]
     )
     def get(self, request):
-        srz_data = OtpPhoneSerializer(data=request.query_params)
+        srz_data = OtpSerializer(data=request.query_params)
         if srz_data.is_valid():
             otpModel.objects.create(phone_number=srz_data.validated_data['phone_number'])
             return Response({'phone_number': srz_data.data['phone_number'],
                              "message": "code sent"}, status=status.HTTP_200_OK)
         return Response(srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
+    
 
 
-class OtpPhoneCodeApiView(APIView):
+class OtpValidateApiView(APIView):
     permission_classes = [AllowAny]
-    serializer_class = OtpPhoneCodeSerializer
+    serializer_class = OtpSerializer
 
     def post(self, request):
-        srz_data = OtpPhoneCodeSerializer(data=request.data)
+        srz_data = OtpSerializer(data=request.data)
         if srz_data.is_valid():
             otps = otpModel.objects.filter(phone_number=srz_data.validated_data['phone_number']).values_list('code', flat=True)
             if srz_data.validated_data['code'] in otps:
