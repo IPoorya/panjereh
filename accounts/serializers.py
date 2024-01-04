@@ -6,14 +6,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'
+        exclude = ['id', 'is_active', 'is_admin', 'last_login']
 
         extra_kwargs = {
             "password":{"write_only": True},
-            # "last_login":{"write_only":True},
-            # "date_joined":{"write_only":True},
-            # "is_admin":{"write_only":True},
-            # "is_active":{"write_only":True},
         }
 
     def validate_phone_number(self, value):
@@ -21,18 +17,16 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("phone number is not validated")
         return value
 
-class OTPSerializer(serializers.Serializer):
+class OtpPhoneSerializer(serializers.Serializer):
     phone_number = serializers.CharField(max_length=11)
-    code = serializers.CharField(max_length=10, default='')
 
     def validate_phone_number(self, value):
         if ValidPhone.objects.filter(phone_number=value).exists():
             raise serializers.ValidationError("phone number already validated")
         return value
+    
+class OtpPhoneCodeSerializer(serializers.Serializer):
+    phone_number = serializers.CharField(max_length=11)
+    code = serializers.CharField(max_length=10)
 
 
-class PhoneIsValidSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = ValidPhone
-        fields = 'phone_number'

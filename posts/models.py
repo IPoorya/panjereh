@@ -47,7 +47,7 @@ class info(models.Model):
         abstract = True
 
     def __str__(self):
-        return str(self.timestamp) + self.title
+        return str(self.timestamp) + ' - ' + self.title
 
 
 class ApartmentSell(info):

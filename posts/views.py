@@ -9,7 +9,25 @@ from permissions import IsOwnerOrReadOnly
 
 
 class CreatePostApiView(APIView):
+    """
+    create post
+
+    type parametre values: sell, rent
+
+    example: /post/2/create/
+
+    **note**
+
+    response schema could be different depend on the post type(sell or rent)
+
+    differneces:
+    in sell there is "total_price" field, but in rent there are "high_deposite", "low_rent", "low_deposite" and "high_rent" fields
+
+    so don't worry about response schema, we just put sell schema as default response schema for swagger
+    """
+
     permission_classes = [IsAuthenticated]
+    serializer_class = ApartmentSellSerializer
 
     def post(self, request, type):
         if type == 'rent':
@@ -25,7 +43,22 @@ class CreatePostApiView(APIView):
     
 
 class GetPostApiView(APIView):
+    """
+    get posts using timestamp(temp)
+
+    **note**
+
+    response schema could be different depend on the post type(sell or rent)
+
+    differneces:
+    in sell there is "total_price" field, but in rent there are "high_deposite", "low_rent", "low_deposite" and "high_rent" fields
+
+    so don't worry about response schema, we just put sell schema as default response schema for swagger
+    """
+
+
     permission_classes = [AllowAny]
+    serializer_class = ApartmentSellSerializer
 
     def get(self, request, timestamp):
         timestamp = str(timestamp)
@@ -33,23 +66,35 @@ class GetPostApiView(APIView):
             post = ApartmentSell.objects.filter(timestamp=timestamp).first()
             if post:
                 post = ApartmentSellSerializer(instance=post)
-
-            return Response(post, status=status.HTTP_200_OK)
+                return Response(post.data, status=status.HTTP_200_OK)
+            return Response({"Error": "not found!"}, status=status.HTTP_404_NOT_FOUND)
         
         elif timestamp[0] == '2':
             post = ApartmentRent.objects.filter(timestamp=timestamp).first()
             if post:
                 post = ApartmentRentSerializer(instance=post)
-
-            return Response(post.data, status=status.HTTP_200_OK)
+                return Response(post.data, status=status.HTTP_200_OK)
+            return Response({"Error": "not found!"}, status=status.HTTP_404_NOT_FOUND)
             
 
-        return Response({"Error": "not found!"}, status=status.HTTP_404_NOT_FOUND)
     
 
 
 class EditPostApiView(APIView):
+    """
+    edit post using timestamp(temp)
+
+    **note**
+
+    response schema could be different depend on the post type(sell or rent)
+
+    differneces:
+    in sell there is "total_price" field, but in rent there are "high_deposite", "low_rent", "low_deposite" and "high_rent" fields
+
+    so don't worry about response schema, we just put sell schema as default response schema for swagger
+    """
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    serializer_class = ApartmentSellSerializer
 
     def put(self, request, timestamp):
         timestamp = str(timestamp)
@@ -74,6 +119,9 @@ class EditPostApiView(APIView):
 
 
 class DeletePostApiView(APIView):
+    """
+    delete post using timestamp(temp)
+    """
     permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
 
     def delete(self, request, timestamp):
