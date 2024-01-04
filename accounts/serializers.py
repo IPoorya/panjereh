@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
     
 class OtpSerializer(serializers.Serializer):
     phone_number = serializers.CharField(max_length=11)
-    code = serializers.ReadOnlyField()
+    code = serializers.CharField(read_only=True, max_length=5)
 
     def validate_phone_number(self, value):
         if ValidPhone.objects.filter(phone_number=value).exists():
