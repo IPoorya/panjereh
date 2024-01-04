@@ -51,8 +51,7 @@ class info(models.Model):
     token = models.CharField(
         max_length=8,
         unique=True,
-        null=True,
-        editable=False
+        editable=False,
     )
 
 
