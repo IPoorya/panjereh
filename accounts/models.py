@@ -24,6 +24,9 @@ class User(AbstractBaseUser):
     USERNAME_FIELD = "phone_number"
     REQUIRED_FIELDS = ['username']
 
+    def posts(self):
+        return list(self.sellPosts.all()) + list(self.rentPosts.all())
+
     def __str__(self):
         return f'{self.username} - {self.phone_number}'
 

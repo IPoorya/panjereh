@@ -22,3 +22,16 @@ class ApartmentRentSerializer(serializers.ModelSerializer):
         exclude = ('owner', 'id', 'visible')
 
 
+class PostFiltersSerializer(serializers.Serializer):
+    province = serializers.ListField(required=False, write_only=True)
+    city = serializers.ListField(required=False, write_only=True)
+    meterage = serializers.IntegerField(required=False, write_only=True)
+    build = serializers.IntegerField(required=False, write_only=True)
+    elevator = serializers.BooleanField(required=False, write_only=True)
+    parking = serializers.BooleanField(required=False, write_only=True)
+    storage = serializers.BooleanField(required=False, write_only=True)
+    timestamp = serializers.CharField(required=False, max_length=30)
+    posts = serializers.ListField(read_only=True)
+
+
+

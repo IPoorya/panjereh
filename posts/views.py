@@ -1,10 +1,11 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import ApartmentSellSerializer, ApartmentRentSerializer
+from .serializers import ApartmentSellSerializer, ApartmentRentSerializer, PostFiltersSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from.models import ApartmentRent, ApartmentSell
 from permissions import IsOwnerOrReadOnly
+from .cities import province, city
 
 
 
@@ -25,7 +26,6 @@ class CreatePostApiView(APIView):
 
     so don't worry about response schema, we just put rent schema as default response schema in swagger
     """
-
     permission_classes = [IsAuthenticated]
     serializer_class = ApartmentRentSerializer
 
@@ -55,8 +55,6 @@ class GetPostApiView(APIView):
 
     so don't worry about response schema, we just put sell schema as default response schema in swagger
     """
-
-
     permission_classes = [AllowAny]
     serializer_class = ApartmentSellSerializer
 
@@ -132,4 +130,130 @@ class DeletePostApiView(APIView):
             post.delete()
             return Response({"message": "post deleted"}, status=status.HTTP_200_OK)
         return Response({"Error": "not found!"}, status=status.HTTP_404_NOT_FOUND)
+    
+
+class GetCitiesApiView(APIView):
+    """
+    get provinces and cities list
+    """
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return Response({"province": province, "city": city}, status=status.HTTP_200_OK)
+
+
+class SellListApiView(APIView):
+    """
+    filters are optional.
+
+    If a timestamp is not provided, the last 20 posts will be returned. However, if a timestamp is provided, then the 20 posts before that timestamp will be returned.
+    """
+
+    permission_classes = [AllowAny]
+    serializer_class = PostFiltersSerializer
+
+
+    def post(self, request):
+        sells = ApartmentSell.objects.all().order_by("-id")
+        if request.data:
+            filters = PostFiltersSerializer(data=request.data)
+            
+            if filters.is_valid():      
+                if not sells:
+                    return Response({"error": "no data"}, status=status.HTTP_404_NOT_FOUND)
+                # applying filters
+                if filters.validated_data.get('timestamp', None):
+                    timestamp = filters.validated_data.get('timestamp', None)
+                    sells = sells.filter(timestamp__lt=filters.validated_data.get('timestamp', None))
+                if filters.validated_data.get('province', None):
+                    sells = sells.filter(province__in=filters.validated_data.get('province', None))
+                if filters.validated_data.get('city', None):
+                    sells = sells.filter(city__in=filters.validated_data.get('city', None))
+                if filters.validated_data.get('meterage', None):
+                    sells = sells.filter(meterage=filters.validated_data.get('meterage', None))
+                if filters.validated_data.get('build', None):
+                    sells = sells.filter(build=filters.validated_data.get('build', None))
+                if filters.validated_data.get('elevator', None):
+                    sells = sells.filter(elevator=filters.validated_data.get('elevator', None))
+                if filters.validated_data.get('parking', None):
+                    sells = sells.filter(parking=filters.validated_data.get('parking', None))
+                if filters.validated_data.get('storage', None):
+                    sells = sells.filter(storage=filters.validated_data.get('storage', None))
+            else:
+                return Response(filters.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        
+        # getting and sending posts
+        if sells:
+            sells = sells[:20]
+            timestamp = sells[-1].timestamp
+            sells = ApartmentRentSerializer(sells, many=True)
+            return Response({
+                "timestamp": timestamp,
+                "posts": sells.data
+                }, status=status.HTTP_200_OK)
+        return Response({
+                "timestamp": timestamp,
+                "error": "no data",
+                }, status=status.HTTP_200_OK)
+
+    
+
+
+class RentListApiView(APIView):
+    """
+    filters are optional.
+
+    If a timestamp is not provided, the last 20 posts will be returned. However, if a timestamp is provided, then the 20 posts before that timestamp will be returned.
+    """
+
+    permission_classes = [AllowAny]
+    serializer_class = PostFiltersSerializer
+
+
+    def post(self, request):
+        rents = ApartmentRent.objects.all().order_by("-id")
+        if request.data:
+            filters = PostFiltersSerializer(data=request.data)
+            
+            if filters.is_valid():      
+                if not rents:
+                    return Response({"error": "no data"}, status=status.HTTP_404_NOT_FOUND)
+                # applying filters
+                if filters.validated_data.get('timestamp', None):
+                    timestamp = filters.validated_data.get('timestamp', None)
+                    rents = rents.filter(timestamp__lt=filters.validated_data.get('timestamp', None))
+                if filters.validated_data.get('province', None):
+                    rents = rents.filter(province__in=filters.validated_data.get('province', None))
+                if filters.validated_data.get('city', None):
+                    rents = rents.filter(city__in=filters.validated_data.get('city', None))
+                if filters.validated_data.get('meterage', None):
+                    rents = rents.filter(meterage=filters.validated_data.get('meterage', None))
+                if filters.validated_data.get('build', None):
+                    rents = rents.filter(build=filters.validated_data.get('build', None))
+                if filters.validated_data.get('elevator', None):
+                    rents = rents.filter(elevator=filters.validated_data.get('elevator', None))
+                if filters.validated_data.get('parking', None):
+                    rents = rents.filter(parking=filters.validated_data.get('parking', None))
+                if filters.validated_data.get('storage', None):
+                    rents = rents.filter(storage=filters.validated_data.get('storage', None))
+            else:
+                return Response(filters.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        
+        # getting and sending posts
+        if rents:
+            rents = rents[:20]
+            timestamp = rents[-1].timestamp
+            rents = ApartmentRentSerializer(rents, many=True)
+            return Response({
+                "timestamp": timestamp,
+                "posts": rents.data
+                }, status=status.HTTP_200_OK)
+        return Response({
+                "timestamp": timestamp,
+                "error": "no data",
+                }, status=status.HTTP_200_OK)
+        
+        
         

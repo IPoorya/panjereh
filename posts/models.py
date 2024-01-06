@@ -2,12 +2,8 @@ import time
 from django.db import models
 from accounts.models import User
 from django.utils.crypto import get_random_string
+from .cities import province, city
 
-def generate_unique_token():
-    while True:
-        token = get_random_string(length=7)
-        if not info.objects.filter(token=token).exists():
-            return id
 
 
 def upload_to(instance, filename):
@@ -29,8 +25,8 @@ class info(models.Model):
     parking = models.BooleanField()
     storage = models.BooleanField()
 
-    province = models.CharField(max_length=63)
-    city = models.CharField(max_length=63)
+    province = models.CharField(max_length=63, choices=province)
+    city = models.CharField(max_length=63, choices=city)
     neighbourhood = models.CharField(max_length=63)
     location = models.CharField(max_length=1023, null=True, blank=True)
 
@@ -78,7 +74,7 @@ class ApartmentSell(info):
                     self.token = 'S' + get_random_string(length=8)
                     break
 
-            self.timestamp = '1' + str(time.time()).split('.')[0]
+            self.timestamp = ''.join(str(time.time()).split('.'))
         return super().save(*args, **kwargs)
 
 
@@ -100,14 +96,18 @@ class ApartmentRent(info):
                     self.token = 'R' + get_random_string(length=8)
                     break
 
-            self.timestamp = '2' + str(time.time()).split('.')[0]
+            self.timestamp = ''.join(str(time.time()).split('.'))
         return super().save(*args, **kwargs)
 
-    
 
+# class Post(models.Model):
+#     sell = models.OneToOneField(ApartmentSell, on_delete=models.CASCADE, null=True, blank=True)
+#     rent = models.OneToOneField(ApartmentRent, on_delete=models.CASCADE, null=True, blank=True)
+#     timestamp = models.CharField(max_length=31)
 
-
-
-
+#     def save(self, *args, **kwargs):
+#         if not self.pk:
+#             self.timestamp = ''.join(str(time.time()).split('.'))
+#         return super().save(*args, **kwargs)
     
 

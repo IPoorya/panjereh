@@ -26,5 +26,8 @@ class OtpSerializer(serializers.Serializer):
         if ValidPhone.objects.filter(phone_number=value).exists():
             raise serializers.ValidationError("phone number already validated")
         return value
+    
+
+
 
 
