@@ -155,12 +155,12 @@ class SellListApiView(APIView):
 
     def post(self, request):
         sells = ApartmentSell.objects.all().order_by("-id")
+        if not sells:
+            return Response({"error": "no data"}, status=status.HTTP_404_NOT_FOUND)
         if request.data:
             filters = PostFiltersSerializer(data=request.data)
             
             if filters.is_valid():      
-                if not sells:
-                    return Response({"error": "no data"}, status=status.HTTP_404_NOT_FOUND)
                 # applying filters
                 if filters.validated_data.get('timestamp', None):
                     timestamp = filters.validated_data.get('timestamp', None)
@@ -213,12 +213,12 @@ class RentListApiView(APIView):
 
     def post(self, request):
         rents = ApartmentRent.objects.all().order_by("-id")
+        if not rents:
+            return Response({"error": "no data"}, status=status.HTTP_404_NOT_FOUND)
         if request.data:
             filters = PostFiltersSerializer(data=request.data)
             
             if filters.is_valid():      
-                if not rents:
-                    return Response({"error": "no data"}, status=status.HTTP_404_NOT_FOUND)
                 # applying filters
                 if filters.validated_data.get('timestamp', None):
                     timestamp = filters.validated_data.get('timestamp', None)
