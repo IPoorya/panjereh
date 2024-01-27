@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-*ik*yaepoi%-!izqe-i52yviukxoh(rfy4xrb1+pj_*#iurh&l'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'posts.apps.PostsConfig',
     'storages',
     'drf_spectacular',
-    'features',
+    'features.apps.FeaturesConfig',
 ]
 
 MIDDLEWARE = [
@@ -125,6 +125,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -146,8 +148,7 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Panjereh',
-    'DESCRIPTION': 'Your project description',
+    'TITLE': 'Panjereh',    'DESCRIPTION': 'Real Estate Platform APIs',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
     # OTHER SETTINGS
@@ -200,12 +201,13 @@ SIMPLE_JWT = {
 
 # Object storage
 # django >= 4.2
-STORAGES = {"default": 
+STORAGES = {"default":
             {"BACKEND": "storages.backends.s3boto3.S3Boto3Storage"},
-            "staticfiles": 
-            {"BACKEND": "storages.backends.s3boto3.S3Boto3Storage",}
+            "staticfiles":
+            {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",}
             }
 AWS_S3_ENDPOINT_URL = os.getenv("LIARA_ENDPOINT")
 AWS_S3_ACCESS_KEY_ID = os.getenv("LIARA_ACCESS_KEY")
 AWS_S3_SECRET_ACCESS_KEY = os.getenv("LIARA_SECRET_KEY")
 AWS_STORAGE_BUCKET_NAME = os.getenv("LIARA_BUCKET_NAME")
+
