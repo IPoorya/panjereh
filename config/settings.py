@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'posts.apps.PostsConfig',
     'storages',
     'drf_spectacular',
+    'features',
 ]
 
 MIDDLEWARE = [

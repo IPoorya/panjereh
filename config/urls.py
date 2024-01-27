@@ -8,7 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('accounts.urls', namespace='accounts')),
     path('', include('posts.urls', namespace='posts')),
-
+    path('', include('features.urls', namespace='features')),
      # YOUR PATTERNS
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     # Optional UI:
