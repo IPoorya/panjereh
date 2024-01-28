@@ -20,7 +20,7 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install depende
 ```bash
 pip install -r requirements.txt
 ```
-Once pip has finished downloading the dependencies create migrations and apply them:
+Once pip has finished downloading the dependencies, create migrations and apply them:
 ```bash
 python manage.py makemigrations
 python manage.py migrate
