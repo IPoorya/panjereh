@@ -33,7 +33,7 @@ python manage.py runserver
 check 127.0.0.1:8000/ for swagger 
 
 ## Liara Bucket Configs
-Liara (amazonS3) bucket is used for this project. so fill your bucket credentials in the .env file:
+Liara (amazonS3) bucket is used for this project. so create a .env file and add your bucket credentials:
 
 ```bash
 LIARA_ENDPOINT= # bucket endpoint
