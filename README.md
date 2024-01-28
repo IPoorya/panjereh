@@ -39,7 +39,7 @@ LIARA_BUCKET_NAME= # bucket name
 LIARA_ACCESS_KEY= # bucket access key
 LIARA_SECRET_KEY= # bucket secret key
 ```
-[swagger](127.0.0.1:8000/)
+[pip](https://pip.pypa.io/en/stable/)
 
 ## Contributing
 
