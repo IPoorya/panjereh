@@ -39,6 +39,7 @@ LIARA_BUCKET_NAME= # bucket name
 LIARA_ACCESS_KEY= # bucket access key
 LIARA_SECRET_KEY= # bucket secret key
 ```
+now you can the apis swagger in [127.0.0.1:8000/](127.0.0.1:8000/)
 
 ## Contributing
 
