@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import UserSerializer, OtpSerializer
+from .serializers import UserSerializer, OtpSerializer, ValidateCodeSerializer
 from .models import User, otp as otpModel, ValidPhone
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 from rest_framework import status
@@ -12,7 +12,7 @@ class SignUpApiView(APIView):
     permission_classes = [AllowAny]
     serializer_class = UserSerializer
 
-    
+
     def post(self, request):
         srz_data = UserSerializer(data=request.data)
         if srz_data.is_valid():
@@ -32,8 +32,8 @@ class SignUpApiView(APIView):
                     }
                 }, status=status.HTTP_200_OK)
         return Response(srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
-            
-    
+
+
 
 class OtpApiView(APIView):
     """
@@ -62,22 +62,23 @@ class OtpApiView(APIView):
             return Response({'phone_number': srz_data.data['phone_number'],
                              "message": "code sent"}, status=status.HTTP_200_OK)
         return Response(srz_data.errors, status=status.HTTP_400_BAD_REQUEST)
-    
+
 
 
 class OtpValidateApiView(APIView):
     permission_classes = [AllowAny]
-    serializer_class = OtpSerializer
+    serializer_class = ValidateCodeSerializer
 
     def post(self, request):
-        srz_data = OtpSerializer(data=request.data)
+        srz_data = ValidateCodeSerializer(data=request.data)
         if srz_data.is_valid():
             otps = otpModel.objects.filter(phone_number=srz_data.validated_data['phone_number']).values_list('code', flat=True)
-            if srz_data.validated_data['code'] in otps:
-                ValidPhone.objects.create(phone_number=srz_data.validated_data['phone_number'])
-                otpModel.objects.filter(phone_number=srz_data.validated_data['phone_number']).delete()
-                return Response({"message":"valid!", "status":status.HTTP_202_ACCEPTED})
+            for code in otps:
+                if srz_data.validated_data['code']==code and not otpModel.objects.get(code=code).is_expired():
+                    ValidPhone.objects.create(phone_number=srz_data.validated_data['phone_number'])
+                    otpModel.objects.filter(phone_number=srz_data.validated_data['phone_number']).delete()
+                    return Response({"message":"valid!", "status":status.HTTP_202_ACCEPTED})
         return Response({'message': 'wrong code or invalid phone number!', 'status': status.HTTP_400_BAD_REQUEST})
 
 
-        
+
