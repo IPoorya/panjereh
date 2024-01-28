@@ -30,6 +30,8 @@ and run server:
 ```bash
 python manage.py runserver
 ```
+check 127.0.0.1:8000/ for swagger 
+
 ## Liara Bucket Configs
 Liara (amazonS3) bucket is used for this project. so fill your bucket credentials in the .env file:
 
@@ -39,7 +41,7 @@ LIARA_BUCKET_NAME= # bucket name
 LIARA_ACCESS_KEY= # bucket access key
 LIARA_SECRET_KEY= # bucket secret key
 ```
-[pip](127.0.0.1:8000/)
+
 
 ## Contributing
 
