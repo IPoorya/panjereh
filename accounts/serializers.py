@@ -28,6 +28,14 @@ class OtpSerializer(serializers.Serializer):
         return value
     
 
+class ValidateCodeSerializer(serializers.Serializer):
+    phone_number = serializers.CharField(max_length=11, write_only=True)
+    code = serializers.CharField(write_only=True, max_length=5)
+    message = serializers.CharField(max_length=127, read_only=True)
 
+    def validate_phone_number(self, value):
+        if ValidPhone.objects.filter(phone_number=value).exists():
+            raise serializers.ValidationError("phone number already validated")
+        return value
 
 
