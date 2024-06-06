@@ -48,6 +48,7 @@ class info(models.Model):
         max_length=8,
         unique=True,
         editable=False,
+        null=True,
     )
 
 
